@@ -13,7 +13,8 @@
             --text-muted: #64748b;
             --border: #e2e8f0;
             --danger: #dc2626;
-            --warning: #ca8a04;
+            --warning: #ea580c;
+            --success: #16a34a;
         }
 
         body {
@@ -28,29 +29,68 @@
         }
 
         .container {
-            max-width: 1400px; /* Increased to accommodate side-by-side */
+            max-width: 1400px;
             margin: 0 auto;
             flex: 1;
             width: 100%;
         }
 
-        h1 {
-            text-align: center;
-            color: var(--primary);
+        /* Header Layout */
+        .app-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 20px;
         }
+
+        h1 {
+            color: var(--primary);
+            margin: 0;
+        }
+
+        /* Top Metric Tabs */
+        .top-stats {
+            display: flex;
+            gap: 15px;
+        }
+
+        .top-stat-tab {
+            background-color: var(--surface);
+            padding: 10px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            font-weight: 600;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .top-stat-tab span {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .tab-total span { color: var(--primary); }
+        .tab-active span { color: var(--warning); }
+        .tab-closed span { color: var(--success); }
 
         /* Two-Column Layout */
         .main-layout {
             display: grid;
-            grid-template-columns: 1.5fr 1fr; /* Left side takes 60%, right takes 40% */
+            grid-template-columns: 1.5fr 1fr; 
             gap: 25px;
-            align-items: start; /* Prevents stretching */
+            align-items: start;
         }
 
         @media (max-width: 1024px) {
             .main-layout {
-                grid-template-columns: 1fr; /* Stacks to single column on smaller screens */
+                grid-template-columns: 1fr;
+            }
+            .app-header {
+                flex-direction: column;
             }
         }
 
@@ -157,8 +197,8 @@
 
         /* Table Section */
         .log-card {
-            max-height: calc(100vh - 160px); /* Keeps it on screen */
-            overflow-y: auto; /* Adds inner scrollbar if too many items */
+            max-height: calc(100vh - 160px); 
+            overflow-y: auto; 
             position: sticky;
             top: 20px;
         }
@@ -189,10 +229,14 @@
             font-size: 12px;
             height: auto;
             margin-right: 5px;
+            cursor: pointer;
+            border: none;
+            color: white;
+            font-weight: bold;
         }
 
         .edit-btn {
-            background-color: var(--warning);
+            background-color: #ca8a04;
         }
         .edit-btn:hover { background-color: #a16207; }
 
@@ -222,7 +266,22 @@
 <body>
 
 <div class="container">
-    <h1>Alert Tracker</h1>
+    
+    <!-- New Header Section with Tabs -->
+    <header class="app-header">
+        <h1>Alert Tracker</h1>
+        <div class="top-stats">
+            <div class="top-stat-tab tab-total">
+                Total Alerts: <span id="topTotalCount">0</span>
+            </div>
+            <div class="top-stat-tab tab-active">
+                Active (Assigned/Escalated): <span id="topActiveCount">0</span>
+            </div>
+            <div class="top-stat-tab tab-closed">
+                Closed: <span id="topClosedCount">0</span>
+            </div>
+        </div>
+    </header>
 
     <div class="main-layout">
         
@@ -234,7 +293,6 @@
                 <div class="form-group">
                     <label for="queueSelect">Select Queue</label>
                     <select id="queueSelect">
-                        <!-- Image 1 Queues -->
                         <option value="Originations Core Eng.">Originations Core Eng.</option>
                         <option value="Consumer Core Services">Consumer Core Services</option>
                         <option value="Underwriting Platform">Underwriting Platform</option>
@@ -245,7 +303,6 @@
                         <option value="LCX-eng">LCX-eng</option>
                         <option value="Autorefi">Autorefi</option>
                         <option value="EBOPS">EBOPS</option>
-                        <!-- Image 2 Queues -->
                         <option value="Credit Decision Services">Credit Decision Services</option>
                         <option value="DAP Core">DAP Core</option>
                         <option value="Mas General">Mas General</option>
@@ -283,19 +340,16 @@
 
             <!-- Counters Dashboard -->
             <div class="dashboard">
-                <!-- Status Counters -->
                 <div class="card">
                     <h2>Status Summary</h2>
                     <div id="statusList"></div>
                 </div>
 
-                <!-- Priority Counters -->
                 <div class="card">
                     <h2>Priority Summary</h2>
                     <div id="priorityList"></div>
                 </div>
 
-                <!-- Queue Counters -->
                 <div class="card">
                     <h2>Queue Summary</h2>
                     <div id="queueList"></div>
@@ -387,16 +441,37 @@
     }
 
     function updateDashboard() {
+        // Data stores
         let queueCounts = {};
         let priorityCounts = { "P0": 0, "P1": 0, "P2": 0, "P3": 0 };
         let statusCounts = { "Assigned": 0, "Escalated": 0, "Closed": 0 };
+        
+        // Top tab metrics
+        let totalAlerts = alerts.length;
+        let activeAlerts = 0;
+        let closedAlerts = 0;
 
+        // Process aggregations
         alerts.forEach(alert => {
+            // Queue, Priority, Status counters
             queueCounts[alert.queue] = (queueCounts[alert.queue] || 0) + 1;
             priorityCounts[alert.priority]++;
             statusCounts[alert.status]++;
+            
+            // Top tab logic
+            if(alert.status === "Closed") {
+                closedAlerts++;
+            } else {
+                activeAlerts++; // Assigned or Escalated
+            }
         });
 
+        // Update Top Tabs UI
+        document.getElementById("topTotalCount").innerText = totalAlerts;
+        document.getElementById("topActiveCount").innerText = activeAlerts;
+        document.getElementById("topClosedCount").innerText = closedAlerts;
+
+        // Update Status List UI
         document.getElementById("statusList").innerHTML = Object.keys(statusCounts).map(status => `
             <div class="stat-row">
                 <span>${status}</span>
@@ -404,6 +479,7 @@
             </div>
         `).join('');
 
+        // Update Priority List UI
         document.getElementById("priorityList").innerHTML = Object.keys(priorityCounts).map(priority => `
             <div class="stat-row">
                 <span class="priority-${priority.toLowerCase()}">${priority}</span>
@@ -411,6 +487,7 @@
             </div>
         `).join('');
 
+        // Update Queue List UI
         const queueContainer = document.getElementById("queueList");
         if (Object.keys(queueCounts).length === 0) {
             queueContainer.innerHTML = '<div class="stat-row" style="color: var(--text-muted);">No alerts logged yet.</div>';
@@ -424,6 +501,7 @@
             `).join('');
         }
 
+        // Update Table UI
         const tableBody = document.getElementById("alertTableBody");
         if (alerts.length === 0) {
             tableBody.innerHTML = `<tr><td colspan="4" class="empty-state">No alerts recorded yet.</td></tr>`;
