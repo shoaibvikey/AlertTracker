@@ -337,7 +337,6 @@
             font-size: 20px;
         }
 
-        /* FIXED CLOSE BUTTON STYLES */
         .close-modal-icon {
             background: transparent;
             border: none;
@@ -351,7 +350,7 @@
         
         .close-modal-icon:hover { 
             color: var(--danger); 
-            background: transparent; /* This overrides the global button hover blue */
+            background: transparent;
         }
 
         .modal-actions {
@@ -436,6 +435,45 @@
             color: var(--text-muted);
             font-size: 14px;
             border-top: 1px solid var(--border);
+        }
+
+        /* --- Mobile Phone Optimizations --- */
+        @media (max-width: 768px) {
+            /* Stack the top metric tabs */
+            .top-stats {
+                flex-direction: column;
+                width: 100%;
+            }
+            .top-stat-tab {
+                justify-content: space-between;
+                width: 100%;
+                box-sizing: border-box;
+            }
+            
+            /* Stack the input form elements */
+            .input-section {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .form-group {
+                width: 100%;
+            }
+            
+            /* Make the Add button full width for easy tapping */
+            button#submitBtn {
+                width: 100%;
+                margin-top: 10px;
+            }
+
+            /* Allow the table to scroll horizontally on small screens */
+            .table-container {
+                overflow-x: auto; 
+            }
+            
+            /* Prevent table text from squishing too much */
+            table {
+                min-width: 500px; 
+            }
         }
     </style>
 </head>
