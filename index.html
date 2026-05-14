@@ -252,6 +252,71 @@
             font-style: italic;
         }
 
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(15, 23, 42, 0.6); /* Dark semi-transparent background */
+            backdrop-filter: blur(4px); /* Blurs the background elements */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 1;
+            transition: opacity 0.2s ease-in-out;
+        }
+
+        .modal-overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .modal-content {
+            background-color: var(--surface);
+            padding: 25px 30px;
+            border-radius: 12px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            max-width: 400px;
+            width: 90%;
+            transform: scale(1);
+            transition: transform 0.2s ease-in-out;
+        }
+
+        .modal-overlay.hidden .modal-content {
+            transform: scale(0.95);
+        }
+
+        .modal-content h3 {
+            margin-top: 0;
+            color: var(--text-main);
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+
+        .modal-content p {
+            color: var(--text-muted);
+            font-size: 15px;
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        .btn-cancel {
+            background-color: #f1f5f9;
+            color: var(--text-main);
+        }
+        
+        .btn-cancel:hover { background-color: #e2e8f0; }
+        
+        .btn-confirm-delete {
+            background-color: var(--danger);
+        }
+
         /* Footer */
         footer {
             text-align: center;
@@ -267,7 +332,6 @@
 
 <div class="container">
     
-    <!-- New Header Section with Tabs -->
     <header class="app-header">
         <h1>Alert Tracker</h1>
         <div class="top-stats">
@@ -285,10 +349,7 @@
 
     <div class="main-layout">
         
-        <!-- Left Column: Inputs & Summaries -->
         <div class="left-column">
-            
-            <!-- Input Form -->
             <div class="input-section">
                 <div class="form-group">
                     <label for="queueSelect">Select Queue</label>
@@ -338,7 +399,6 @@
                 <button id="submitBtn" onclick="handleAddOrUpdate()">Add Alert</button>
             </div>
 
-            <!-- Counters Dashboard -->
             <div class="dashboard">
                 <div class="card">
                     <h2>Status Summary</h2>
@@ -357,7 +417,6 @@
             </div>
         </div>
 
-        <!-- Right Column: Alert Logs -->
         <div class="right-column">
             <div class="card log-card">
                 <h2>Recent Alerts Log</h2>
@@ -380,6 +439,18 @@
     </div>
 </div>
 
+<!-- Custom Delete Confirmation Modal -->
+<div id="deleteModal" class="modal-overlay hidden">
+    <div class="modal-content">
+        <h3>Delete Alert</h3>
+        <p>Are you sure you want to delete this alert? This action cannot be undone.</p>
+        <div class="modal-actions">
+            <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+            <button class="btn-confirm-delete" onclick="confirmDelete()">Delete</button>
+        </div>
+    </div>
+</div>
+
 <footer>
     Made with ❤️ By Shoaib Akhtar
 </footer>
@@ -388,6 +459,7 @@
     // State
     let alerts = [];
     let editingId = null; 
+    let pendingDeleteId = null; // New state to track which alert is pending deletion
 
     document.addEventListener("DOMContentLoaded", updateDashboard);
 
@@ -429,49 +501,56 @@
         }
     }
 
+    // Opens the custom modal instead of the browser confirm
     function deleteAlert(id) {
-        if(confirm("Are you sure you want to delete this alert?")) {
-            alerts = alerts.filter(a => a.id !== id);
-            if (editingId === id) {
+        pendingDeleteId = id;
+        document.getElementById('deleteModal').classList.remove('hidden');
+    }
+
+    // Closes the custom modal
+    function closeModal() {
+        pendingDeleteId = null;
+        document.getElementById('deleteModal').classList.add('hidden');
+    }
+
+    // Handles the actual deletion when user clicks "Delete" in the modal
+    function confirmDelete() {
+        if (pendingDeleteId !== null) {
+            alerts = alerts.filter(a => a.id !== pendingDeleteId);
+            if (editingId === pendingDeleteId) {
                 editingId = null;
                 document.getElementById("submitBtn").innerText = "Add Alert";
             }
             updateDashboard();
+            closeModal(); // Hide modal after deleting
         }
     }
 
     function updateDashboard() {
-        // Data stores
         let queueCounts = {};
         let priorityCounts = { "P0": 0, "P1": 0, "P2": 0, "P3": 0 };
         let statusCounts = { "Assigned": 0, "Escalated": 0, "Closed": 0 };
         
-        // Top tab metrics
         let totalAlerts = alerts.length;
         let activeAlerts = 0;
         let closedAlerts = 0;
 
-        // Process aggregations
         alerts.forEach(alert => {
-            // Queue, Priority, Status counters
             queueCounts[alert.queue] = (queueCounts[alert.queue] || 0) + 1;
             priorityCounts[alert.priority]++;
             statusCounts[alert.status]++;
             
-            // Top tab logic
             if(alert.status === "Closed") {
                 closedAlerts++;
             } else {
-                activeAlerts++; // Assigned or Escalated
+                activeAlerts++; 
             }
         });
 
-        // Update Top Tabs UI
         document.getElementById("topTotalCount").innerText = totalAlerts;
         document.getElementById("topActiveCount").innerText = activeAlerts;
         document.getElementById("topClosedCount").innerText = closedAlerts;
 
-        // Update Status List UI
         document.getElementById("statusList").innerHTML = Object.keys(statusCounts).map(status => `
             <div class="stat-row">
                 <span>${status}</span>
@@ -479,7 +558,6 @@
             </div>
         `).join('');
 
-        // Update Priority List UI
         document.getElementById("priorityList").innerHTML = Object.keys(priorityCounts).map(priority => `
             <div class="stat-row">
                 <span class="priority-${priority.toLowerCase()}">${priority}</span>
@@ -487,7 +565,6 @@
             </div>
         `).join('');
 
-        // Update Queue List UI
         const queueContainer = document.getElementById("queueList");
         if (Object.keys(queueCounts).length === 0) {
             queueContainer.innerHTML = '<div class="stat-row" style="color: var(--text-muted);">No alerts logged yet.</div>';
@@ -501,7 +578,6 @@
             `).join('');
         }
 
-        // Update Table UI
         const tableBody = document.getElementById("alertTableBody");
         if (alerts.length === 0) {
             tableBody.innerHTML = `<tr><td colspan="4" class="empty-state">No alerts recorded yet.</td></tr>`;
