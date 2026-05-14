@@ -2,10 +2,14 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Alert Tracker</title>
-    <link rel="manifest" href="manifest.json">
     <style>
+        /* Global Reset to prevent width blowouts */
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
         :root {
             --primary: #2563eb;
             --background: #f1f5f9;
@@ -27,6 +31,7 @@
             display: flex;
             flex-direction: column;
             min-height: 95vh;
+            overflow-x: hidden; /* Prevents side-to-side scrolling of the whole page */
         }
 
         .container {
@@ -117,9 +122,6 @@
             .main-layout {
                 grid-template-columns: 1fr;
             }
-            .app-header {
-                flex-direction: column;
-            }
         }
 
         /* Form Section */
@@ -133,6 +135,7 @@
             gap: 15px;
             align-items: flex-end;
             flex-wrap: wrap;
+            width: 100%;
         }
 
         .form-group {
@@ -154,6 +157,7 @@
             border-radius: 6px;
             font-size: 14px;
             background-color: #fff;
+            width: 100%;
         }
 
         button {
@@ -181,6 +185,7 @@
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 20px;
+            width: 100%;
         }
 
         .card {
@@ -188,6 +193,7 @@
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            width: 100%;
         }
 
         .card h2 {
@@ -230,15 +236,19 @@
             display: flex;
             flex-direction: column;
             max-height: calc(100vh - 120px);
+            width: 100%;
+            overflow: hidden; /* Prevent table from stretching the card */
         }
 
         .table-container {
             overflow-y: auto; 
+            overflow-x: auto; /* Allow horizontal scroll for table only */
             flex-grow: 1;
             margin-top: 5px;
+            width: 100%;
         }
 
-        .table-container::-webkit-scrollbar { width: 6px; }
+        .table-container::-webkit-scrollbar { width: 6px; height: 6px; }
         .table-container::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 10px; }
 
         table {
@@ -252,6 +262,7 @@
             padding: 12px;
             border-bottom: 1px solid var(--border);
             font-size: 14px;
+            white-space: nowrap; /* Keeps table data in a single line */
         }
 
         th {
@@ -366,22 +377,26 @@
         .btn-cancel {
             background-color: #f1f5f9;
             color: var(--text-main);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
         }
         .btn-cancel:hover { background-color: #e2e8f0; }
         
-        .btn-confirm-delete { background-color: var(--danger); }
-
-        /* Specific styles for Delete Modal */
-        #deleteModal .modal-content {
-            max-width: 400px;
-            width: 90%;
+        .btn-confirm-delete { 
+            background-color: var(--danger); 
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
         }
 
-        /* Specific styles for Info Modal */
-        #infoModal .modal-content {
-            max-width: 650px;
-            width: 90%;
-        }
+        #deleteModal .modal-content { max-width: 400px; width: 90%; }
+        #infoModal .modal-content { max-width: 650px; width: 90%; }
 
         .info-body {
             overflow-y: auto;
@@ -412,22 +427,6 @@
             margin-bottom: 5px;
         }
 
-        .info-body h4 {
-            color: var(--text-main);
-            margin-top: 20px;
-            margin-bottom: 10px;
-            font-size: 16px;
-        }
-
-        .info-body ul, .info-body ol {
-            margin-top: 0;
-            padding-left: 20px;
-        }
-
-        .info-body li {
-            margin-bottom: 6px;
-        }
-
         /* Footer */
         footer {
             text-align: center;
@@ -438,42 +437,68 @@
             border-top: 1px solid var(--border);
         }
 
-        /* --- Mobile Phone Optimizations --- */
+        /* --- MOBILE PHONE OPTIMIZATIONS --- */
         @media (max-width: 768px) {
-            /* Stack the top metric tabs */
-            .top-stats {
-                flex-direction: column;
-                width: 100%;
-            }
-            .top-stat-tab {
-                justify-content: space-between;
-                width: 100%;
-                box-sizing: border-box;
+            body { 
+                padding: 12px; 
             }
             
-            /* Stack the input form elements */
+            .app-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+            /* Transform the top stats into side-by-side square boxes */
+            .top-stats {
+                width: 100%;
+                display: flex;
+                flex-direction: row;
+                justify-content: space-between;
+                gap: 10px;
+            }
+
+            .top-stat-tab {
+                flex: 1; /* Makes all three boxes take equal width */
+                flex-direction: column; /* Stacks title and number */
+                justify-content: center;
+                text-align: center;
+                padding: 15px 5px;
+                font-size: 11px; /* Smaller text to fit */
+                gap: 5px;
+                line-height: 1.2;
+            }
+
+            .top-stat-tab span {
+                font-size: 24px; /* Larger number */
+                margin-top: 5px;
+            }
+
+            /* Fix Form Inputs */
             .input-section {
                 flex-direction: column;
                 align-items: stretch;
-            }
-            .form-group {
-                width: 100%;
+                padding: 15px;
             }
             
-            /* Make the Add button full width for easy tapping */
+            .form-group {
+                width: 100%;
+                min-width: unset;
+            }
+            
             button#submitBtn {
                 width: 100%;
                 margin-top: 10px;
             }
 
-            /* Allow the table to scroll horizontally on small screens */
-            .table-container {
-                overflow-x: auto; 
+            /* Allow table to scroll sideways if needed */
+            table {
+                min-width: 450px; 
             }
             
-            /* Prevent table text from squishing too much */
-            table {
-                min-width: 500px; 
+            /* Stack summary cards */
+            .dashboard {
+                grid-template-columns: 1fr; 
             }
         }
     </style>
@@ -487,15 +512,19 @@
             <h1>Alert Tracker</h1>
             <i class="info-icon" onclick="openInfoModal()" title="How to use">&#8505;</i>
         </div>
+        
         <div class="top-stats">
             <div class="top-stat-tab tab-total">
-                Total Alerts: <span id="topTotalCount">0</span>
+                Total Alerts<br>
+                <span id="topTotalCount">0</span>
             </div>
             <div class="top-stat-tab tab-active">
-                Active (Assigned/Escalated): <span id="topActiveCount">0</span>
+                Active<br>
+                <span id="topActiveCount">0</span>
             </div>
             <div class="top-stat-tab tab-closed">
-                Closed: <span id="topClosedCount">0</span>
+                Closed<br>
+                <span id="topClosedCount">0</span>
             </div>
         </div>
     </header>
@@ -584,8 +613,7 @@
                             </tr>
                         </thead>
                         <tbody id="alertTableBody">
-                            <!-- Rows will be injected here -->
-                        </tbody>
+                            </tbody>
                     </table>
                 </div>
             </div>
@@ -594,7 +622,6 @@
     </div>
 </div>
 
-<!-- Info/How to Use Modal -->
 <div id="infoModal" class="modal-overlay hidden">
     <div class="modal-content">
         <div class="modal-header">
@@ -608,33 +635,20 @@
                 Currently, this Alert Tracker is designed for active, single-session tracking. Refreshing your web browser or closing the tab will clear your current alert history. Keep the tab open while you are actively working your shift!
             </div>
 
-            <h4>1. Understanding the Dashboard</h4>
-            <ul>
-                <li><strong>The Header (Top):</strong> Provides a quick view of your overall metrics: Total Alerts, Active Alerts (Assigned + Escalated), and Closed Alerts.</li>
-                <li><strong>The Input & Summary Section (Left):</strong> Your control center. Log new alerts and see breakdowns of your data by Status, Priority, and Queue.</li>
-                <li><strong>The Alerts Log (Right):</strong> A scrolling historical table of every alert logged during your current session.</li>
+            <h4 style="margin-top:0;">1. Understanding the Dashboard</h4>
+            <ul style="margin-top:0; padding-left: 20px;">
+                <li><strong>The Header:</strong> Provides a quick view of your overall metrics: Total Alerts, Active Alerts, and Closed Alerts.</li>
+                <li><strong>Input Section:</strong> Log new alerts and see breakdowns by Status, Priority, and Queue.</li>
+                <li><strong>Alerts Log:</strong> A historical table of every alert logged during your current session.</li>
             </ul>
 
             <h4>2. How to Add a New Alert</h4>
-            <ol>
+            <ol style="margin-top:0; padding-left: 20px;">
                 <li>Select the <strong>Queue</strong> the alert belongs to from the dropdown.</li>
                 <li>Select the <strong>Priority</strong> level (P0 - P3).</li>
                 <li>Select the current <strong>Status</strong>.</li>
-                <li>Click the blue <strong>Add Alert</strong> button. Your metrics and logs will update instantly.</li>
+                <li>Click <strong>Add Alert</strong>.</li>
             </ol>
-
-            <h4>3. How to Edit an Existing Alert</h4>
-            <ol>
-                <li>Find the alert in the <strong>Recent Alerts Log</strong> on the right.</li>
-                <li>Click the yellow <strong>Edit</strong> button. The input form will populate with the alert's details.</li>
-                <li>Make your changes and click <strong>Update Alert</strong>.</li>
-            </ol>
-
-            <h4>4. How to Delete an Alert</h4>
-            <ul>
-                <li>Find the alert in the log and click the red <strong>Del</strong> button.</li>
-                <li>Confirm the deletion in the popup. All counters will automatically recalculate.</li>
-            </ul>
             
         </div>
         <div class="modal-actions">
@@ -643,7 +657,6 @@
     </div>
 </div>
 
-<!-- Delete Confirmation Modal -->
 <div id="deleteModal" class="modal-overlay hidden">
     <div class="modal-content">
         <div class="modal-header">
@@ -709,20 +722,12 @@
         }
     }
 
-    // Modal Controls
-    function openInfoModal() {
-        document.getElementById('infoModal').classList.remove('hidden');
-    }
-
-    function closeInfoModal() {
-        document.getElementById('infoModal').classList.add('hidden');
-    }
-
+    function openInfoModal() { document.getElementById('infoModal').classList.remove('hidden'); }
+    function closeInfoModal() { document.getElementById('infoModal').classList.add('hidden'); }
     function deleteAlert(id) {
         pendingDeleteId = id;
         document.getElementById('deleteModal').classList.remove('hidden');
     }
-
     function closeDeleteModal() {
         pendingDeleteId = null;
         document.getElementById('deleteModal').classList.add('hidden');
@@ -740,12 +745,9 @@
         }
     }
 
-    // Close modals when clicking outside the box
     window.onclick = function(event) {
-        const infoModal = document.getElementById('infoModal');
-        const deleteModal = document.getElementById('deleteModal');
-        if (event.target === infoModal) closeInfoModal();
-        if (event.target === deleteModal) closeDeleteModal();
+        if (event.target === document.getElementById('infoModal')) closeInfoModal();
+        if (event.target === document.getElementById('deleteModal')) closeDeleteModal();
     }
 
     function updateDashboard() {

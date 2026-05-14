@@ -1,7 +1,7 @@
 {
   "name": "Alert Tracker",
-  "short_name": "Alerts",
-  "description": "Production Support Alert Tracker",
+  "short_name": "Alerts Tracker",
+  "description": "Alert Tracker",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#f1f5f9",
