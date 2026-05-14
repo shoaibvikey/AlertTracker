@@ -6,6 +6,11 @@
     <title>Alert Tracker</title>
     <style>
         /* Global Reset to prevent width blowouts */
+        html, body {
+            max-width: 100vw;
+            overflow-x: hidden;
+        }
+        
         *, *::before, *::after {
             box-sizing: border-box;
         }
@@ -31,7 +36,6 @@
             display: flex;
             flex-direction: column;
             min-height: 95vh;
-            overflow-x: hidden; /* Prevents side-to-side scrolling of the whole page */
         }
 
         .container {
@@ -49,6 +53,7 @@
             margin-bottom: 30px;
             flex-wrap: wrap;
             gap: 20px;
+            width: 100%;
         }
 
         .title-container {
@@ -116,12 +121,12 @@
             grid-template-columns: 1.5fr 1fr; 
             gap: 25px;
             align-items: start;
+            width: 100%;
         }
 
-        @media (max-width: 1024px) {
-            .main-layout {
-                grid-template-columns: 1fr;
-            }
+        .left-column, .right-column {
+            min-width: 0; /* Prevents grid blowout */
+            width: 100%;
         }
 
         /* Form Section */
@@ -237,12 +242,12 @@
             flex-direction: column;
             max-height: calc(100vh - 120px);
             width: 100%;
-            overflow: hidden; /* Prevent table from stretching the card */
+            overflow: hidden; 
         }
 
         .table-container {
             overflow-y: auto; 
-            overflow-x: auto; /* Allow horizontal scroll for table only */
+            overflow-x: auto; 
             flex-grow: 1;
             margin-top: 5px;
             width: 100%;
@@ -262,7 +267,7 @@
             padding: 12px;
             border-bottom: 1px solid var(--border);
             font-size: 14px;
-            white-space: nowrap; /* Keeps table data in a single line */
+            white-space: nowrap; 
         }
 
         th {
@@ -445,8 +450,16 @@
             
             .app-header {
                 flex-direction: column;
-                align-items: flex-start;
+                align-items: center; /* Center the title and icons */
                 gap: 15px;
+            }
+
+            /* Change layout to Flexbox Stack to strictly prevent blowout */
+            .main-layout {
+                display: flex;
+                flex-direction: column;
+                gap: 20px;
+                width: 100%;
             }
 
             /* Transform the top stats into side-by-side square boxes */
@@ -459,19 +472,18 @@
             }
 
             .top-stat-tab {
-                flex: 1; /* Makes all three boxes take equal width */
-                flex-direction: column; /* Stacks title and number */
+                flex: 1; /* Equal width for all three boxes */
+                flex-direction: column; 
                 justify-content: center;
                 text-align: center;
-                padding: 15px 5px;
-                font-size: 11px; /* Smaller text to fit */
+                padding: 12px 5px;
+                font-size: 12px; 
                 gap: 5px;
-                line-height: 1.2;
             }
 
             .top-stat-tab span {
-                font-size: 24px; /* Larger number */
-                margin-top: 5px;
+                font-size: 22px; 
+                margin-top: 2px;
             }
 
             /* Fix Form Inputs */
