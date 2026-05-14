@@ -195,18 +195,34 @@
         .priority-p2 { color: #ca8a04; font-weight: bold;}
         .priority-p3 { color: #16a34a; font-weight: bold;}
 
-        /* Table Section */
+        /* Table Log Section - FIXED SCROLLING */
         .log-card {
-            max-height: calc(100vh - 160px); 
-            overflow-y: auto; 
             position: sticky;
             top: 20px;
+            display: flex;
+            flex-direction: column;
+            max-height: calc(100vh - 120px); /* Restricts max height so it stays on screen */
+        }
+
+        .table-container {
+            overflow-y: auto; /* Only the table scrolls now */
+            flex-grow: 1;
+            margin-top: 5px;
+        }
+
+        /* Custom Scrollbar for the table */
+        .table-container::-webkit-scrollbar {
+            width: 6px;
+        }
+        .table-container::-webkit-scrollbar-thumb {
+            background-color: #cbd5e1;
+            border-radius: 10px;
         }
 
         table {
             width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
+            border-collapse: separate; /* Changed for better sticky headers */
+            border-spacing: 0;
         }
 
         th, td {
@@ -221,6 +237,8 @@
             font-weight: 600;
             position: sticky;
             top: 0;
+            z-index: 10; /* FIX: Forces header to stay above scrolling rows */
+            box-shadow: 0 2px 4px -1px rgba(0,0,0,0.05); /* Adds a nice shadow when scrolling */
         }
 
         .action-btn {
@@ -256,8 +274,8 @@
         .modal-overlay {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
-            background-color: rgba(15, 23, 42, 0.6); /* Dark semi-transparent background */
-            backdrop-filter: blur(4px); /* Blurs the background elements */
+            background-color: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(4px);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -420,26 +438,28 @@
         <div class="right-column">
             <div class="card log-card">
                 <h2>Recent Alerts Log</h2>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Queue</th>
-                            <th>Priority</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="alertTableBody">
-                        <!-- Rows will be injected here -->
-                    </tbody>
-                </table>
+                <!-- NEW WRAPPER HERE -->
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Queue</th>
+                                <th>Priority</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="alertTableBody">
+                            <!-- Rows will be injected here -->
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
         
     </div>
 </div>
 
-<!-- Custom Delete Confirmation Modal -->
 <div id="deleteModal" class="modal-overlay hidden">
     <div class="modal-content">
         <h3>Delete Alert</h3>
@@ -456,10 +476,9 @@
 </footer>
 
 <script>
-    // State
     let alerts = [];
     let editingId = null; 
-    let pendingDeleteId = null; // New state to track which alert is pending deletion
+    let pendingDeleteId = null;
 
     document.addEventListener("DOMContentLoaded", updateDashboard);
 
@@ -501,19 +520,16 @@
         }
     }
 
-    // Opens the custom modal instead of the browser confirm
     function deleteAlert(id) {
         pendingDeleteId = id;
         document.getElementById('deleteModal').classList.remove('hidden');
     }
 
-    // Closes the custom modal
     function closeModal() {
         pendingDeleteId = null;
         document.getElementById('deleteModal').classList.add('hidden');
     }
 
-    // Handles the actual deletion when user clicks "Delete" in the modal
     function confirmDelete() {
         if (pendingDeleteId !== null) {
             alerts = alerts.filter(a => a.id !== pendingDeleteId);
@@ -522,7 +538,7 @@
                 document.getElementById("submitBtn").innerText = "Add Alert";
             }
             updateDashboard();
-            closeModal(); // Hide modal after deleting
+            closeModal();
         }
     }
 
