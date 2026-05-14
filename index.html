@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Production Support Alert Tracker</title>
+    <title>Alert Tracker</title>
     <style>
         :root {
             --primary: #2563eb;
@@ -22,11 +22,16 @@
             color: var(--text-main);
             margin: 0;
             padding: 20px;
+            display: flex;
+            flex-direction: column;
+            min-height: 95vh;
         }
 
         .container {
             max-width: 1200px;
             margin: 0 auto;
+            flex: 1;
+            width: 100%;
         }
 
         h1 {
@@ -181,17 +186,28 @@
             font-style: italic;
         }
 
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 20px 0;
+            margin-top: 40px;
+            color: var(--text-muted);
+            font-size: 14px;
+            border-top: 1px solid var(--border);
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>L1 Alert Tracker Dashboard</h1>
+    <h1>Alert Tracker</h1>
 
+    <!-- Input Form -->
     <div class="input-section">
         <div class="form-group">
             <label for="queueSelect">Select Queue</label>
             <select id="queueSelect">
+                <!-- Image 1 Queues -->
                 <option value="Originations Core Eng.">Originations Core Eng.</option>
                 <option value="Consumer Core Services">Consumer Core Services</option>
                 <option value="Underwriting Platform">Underwriting Platform</option>
@@ -202,6 +218,7 @@
                 <option value="LCX-eng">LCX-eng</option>
                 <option value="Autorefi">Autorefi</option>
                 <option value="EBOPS">EBOPS</option>
+                <!-- Image 2 Queues -->
                 <option value="Credit Decision Services">Credit Decision Services</option>
                 <option value="DAP Core">DAP Core</option>
                 <option value="Mas General">Mas General</option>
@@ -237,23 +254,28 @@
         <button id="submitBtn" onclick="handleAddOrUpdate()">Add Alert</button>
     </div>
 
+    <!-- Counters Dashboard -->
     <div class="dashboard">
+        <!-- Status Counters -->
         <div class="card">
             <h2>Status Summary</h2>
             <div id="statusList"></div>
         </div>
 
+        <!-- Priority Counters -->
         <div class="card">
             <h2>Priority Summary</h2>
             <div id="priorityList"></div>
         </div>
 
+        <!-- Queue Counters -->
         <div class="card">
             <h2>Queue Summary</h2>
             <div id="queueList"></div>
         </div>
     </div>
 
+    <!-- Alert Log Table -->
     <div class="card">
         <h2>Recent Alerts Log</h2>
         <table>
@@ -266,10 +288,15 @@
                 </tr>
             </thead>
             <tbody id="alertTableBody">
-                </tbody>
+                <!-- Rows will be injected here -->
+            </tbody>
         </table>
     </div>
 </div>
+
+<footer>
+    Made with ❤️ By Shoaib Akhtar
+</footer>
 
 <script>
     // State
