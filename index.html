@@ -337,16 +337,22 @@
             font-size: 20px;
         }
 
+        /* FIXED CLOSE BUTTON STYLES */
         .close-modal-icon {
-            background: none;
+            background: transparent;
             border: none;
             font-size: 28px;
             cursor: pointer;
             color: var(--text-muted);
             padding: 0;
             line-height: 1;
+            outline: none;
         }
-        .close-modal-icon:hover { color: var(--danger); }
+        
+        .close-modal-icon:hover { 
+            color: var(--danger); 
+            background: transparent; /* This overrides the global button hover blue */
+        }
 
         .modal-actions {
             display: flex;
@@ -389,12 +395,12 @@
         .info-body::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 10px; }
 
         .warning-box {
-            background-color: #fef08a; /* Soft yellow */
+            background-color: #fef08a; 
             border-left: 4px solid var(--warning);
             padding: 15px;
             margin-bottom: 20px;
             border-radius: 6px;
-            color: #854d0e; /* Dark yellow/brown text */
+            color: #854d0e; 
             font-size: 14px;
         }
 
