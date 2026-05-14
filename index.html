@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Production Support Alert Tracker</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --background: #f1f5f9;
+            --surface: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --danger: #dc2626;
+            --warning: #ca8a04;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--background);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--primary);
+            margin-bottom: 30px;
+        }
+
+        /* Form Section */
+        .input-section {
+            background-color: var(--surface);
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+            display: flex;
+            gap: 15px;
+            align-items: flex-end;
+            flex-wrap: wrap;
+        }
+
+        .form-group {
+            flex: 1;
+            min-width: 200px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        select {
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 14px;
+            background-color: #fff;
+        }
+
+        button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.2s;
+            height: 40px;
+        }
+
+        button:hover {
+            background-color: #1d4ed8;
+        }
+
+        #submitBtn {
+            min-width: 120px;
+        }
+
+        /* Dashboard Section */
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background-color: var(--surface);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .card h2 {
+            margin-top: 0;
+            font-size: 18px;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 14px;
+        }
+
+        .stat-row:last-child {
+            border-bottom: none;
+        }
+
+        .stat-count {
+            font-weight: bold;
+            color: var(--primary);
+            background: #e0e7ff;
+            padding: 2px 8px;
+            border-radius: 12px;
+        }
+
+        .priority-p0 { color: #dc2626; font-weight: bold; }
+        .priority-p1 { color: #ea580c; font-weight: bold;}
+        .priority-p2 { color: #ca8a04; font-weight: bold;}
+        .priority-p3 { color: #16a34a; font-weight: bold;}
+
+        /* Table Section */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 12px;
+            border-bottom: 1px solid var(--border);
+            font-size: 14px;
+        }
+
+        th {
+            background-color: #f8fafc;
+            font-weight: 600;
+        }
+
+        .action-btn {
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            height: auto;
+            margin-right: 5px;
+        }
+
+        .edit-btn {
+            background-color: var(--warning);
+        }
+        .edit-btn:hover { background-color: #a16207; }
+
+        .delete-btn {
+            background-color: var(--danger);
+        }
+        .delete-btn:hover { background-color: #b91c1c; }
+
+        .empty-state {
+            text-align: center;
+            padding: 20px;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>L1 Alert Tracker Dashboard</h1>
+
+    <div class="input-section">
+        <div class="form-group">
+            <label for="queueSelect">Select Queue</label>
+            <select id="queueSelect">
+                <option value="Originations Core Eng.">Originations Core Eng.</option>
+                <option value="Consumer Core Services">Consumer Core Services</option>
+                <option value="Underwriting Platform">Underwriting Platform</option>
+                <option value="LC Website">LC Website</option>
+                <option value="UFE">UFE</option>
+                <option value="MAS - Alchemy">MAS - Alchemy</option>
+                <option value="Infrastructure">Infrastructure</option>
+                <option value="LCX-eng">LCX-eng</option>
+                <option value="Autorefi">Autorefi</option>
+                <option value="EBOPS">EBOPS</option>
+                <option value="Credit Decision Services">Credit Decision Services</option>
+                <option value="DAP Core">DAP Core</option>
+                <option value="Mas General">Mas General</option>
+                <option value="UWOPS">UWOPS</option>
+                <option value="Investor Servicing">Investor Servicing</option>
+                <option value="Purchase Finance">Purchase Finance</option>
+                <option value="Platform_Architecture">Platform_Architecture</option>
+                <option value="Investor Trading">Investor Trading</option>
+                <option value="Shaw-Spectrum">Shaw-Spectrum</option>
+                <option value="Federation Interfaces">Federation Interfaces</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="prioritySelect">Priority</label>
+            <select id="prioritySelect">
+                <option value="P0">P0</option>
+                <option value="P1">P1</option>
+                <option value="P2">P2</option>
+                <option value="P3">P3</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="statusSelect">Status</label>
+            <select id="statusSelect">
+                <option value="Assigned">Assigned</option>
+                <option value="Escalated">Escalated</option>
+                <option value="Closed">Closed</option>
+            </select>
+        </div>
+
+        <button id="submitBtn" onclick="handleAddOrUpdate()">Add Alert</button>
+    </div>
+
+    <div class="dashboard">
+        <div class="card">
+            <h2>Status Summary</h2>
+            <div id="statusList"></div>
+        </div>
+
+        <div class="card">
+            <h2>Priority Summary</h2>
+            <div id="priorityList"></div>
+        </div>
+
+        <div class="card">
+            <h2>Queue Summary</h2>
+            <div id="queueList"></div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>Recent Alerts Log</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Queue</th>
+                    <th>Priority</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="alertTableBody">
+                </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    // State
+    let alerts = [];
+    let editingId = null; // Keeps track of which alert is being edited
+
+    // Initialize the dashboard on load
+    document.addEventListener("DOMContentLoaded", updateDashboard);
+
+    function handleAddOrUpdate() {
+        const queue = document.getElementById("queueSelect").value;
+        const priority = document.getElementById("prioritySelect").value;
+        const status = document.getElementById("statusSelect").value;
+
+        if (editingId !== null) {
+            // Update existing alert
+            const index = alerts.findIndex(a => a.id === editingId);
+            if (index !== -1) {
+                alerts[index] = { id: editingId, queue, priority, status };
+            }
+            
+            // Reset editing state
+            editingId = null;
+            document.getElementById("submitBtn").innerText = "Add Alert";
+        } else {
+            // Add new alert (Generate a unique ID using timestamp)
+            const newAlert = {
+                id: Date.now().toString(),
+                queue: queue,
+                priority: priority,
+                status: status
+            };
+            alerts.push(newAlert);
+        }
+
+        // Refresh UI
+        updateDashboard();
+    }
+
+    function editAlert(id) {
+        // Find the alert
+        const alertToEdit = alerts.find(a => a.id === id);
+        
+        if (alertToEdit) {
+            // Populate the form with existing data
+            document.getElementById("queueSelect").value = alertToEdit.queue;
+            document.getElementById("prioritySelect").value = alertToEdit.priority;
+            document.getElementById("statusSelect").value = alertToEdit.status;
+            
+            // Set state to editing mode
+            editingId = id;
+            document.getElementById("submitBtn").innerText = "Update Alert";
+            
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    }
+
+    function deleteAlert(id) {
+        // Confirm before deleting
+        if(confirm("Are you sure you want to delete this alert?")) {
+            // Filter out the deleted alert
+            alerts = alerts.filter(a => a.id !== id);
+            
+            // If the user deleted the alert they were currently editing, reset the form
+            if (editingId === id) {
+                editingId = null;
+                document.getElementById("submitBtn").innerText = "Add Alert";
+            }
+            
+            updateDashboard();
+        }
+    }
+
+    function updateDashboard() {
+        let queueCounts = {};
+        let priorityCounts = { "P0": 0, "P1": 0, "P2": 0, "P3": 0 };
+        let statusCounts = { "Assigned": 0, "Escalated": 0, "Closed": 0 };
+
+        // Process aggregations
+        alerts.forEach(alert => {
+            queueCounts[alert.queue] = (queueCounts[alert.queue] || 0) + 1;
+            priorityCounts[alert.priority]++;
+            statusCounts[alert.status]++;
+        });
+
+        // 1. Render Status list
+        document.getElementById("statusList").innerHTML = Object.keys(statusCounts).map(status => `
+            <div class="stat-row">
+                <span>${status}</span>
+                <span class="stat-count">${statusCounts[status]}</span>
+            </div>
+        `).join('');
+
+        // 2. Render Priority list
+        document.getElementById("priorityList").innerHTML = Object.keys(priorityCounts).map(priority => `
+            <div class="stat-row">
+                <span class="priority-${priority.toLowerCase()}">${priority}</span>
+                <span class="stat-count">${priorityCounts[priority]}</span>
+            </div>
+        `).join('');
+
+        // 3. Render Queue list
+        const queueContainer = document.getElementById("queueList");
+        if (Object.keys(queueCounts).length === 0) {
+            queueContainer.innerHTML = '<div class="stat-row" style="color: var(--text-muted);">No alerts logged yet.</div>';
+        } else {
+            const sortedQueues = Object.entries(queueCounts).sort((a, b) => b[1] - a[1]);
+            queueContainer.innerHTML = sortedQueues.map(([queue, count]) => `
+                <div class="stat-row">
+                    <span>${queue}</span>
+                    <span class="stat-count">${count}</span>
+                </div>
+            `).join('');
+        }
+
+        // 4. Render the Table Log
+        const tableBody = document.getElementById("alertTableBody");
+        if (alerts.length === 0) {
+            tableBody.innerHTML = `<tr><td colspan="4" class="empty-state">No alerts recorded yet.</td></tr>`;
+        } else {
+            // Reverse the array to show newest alerts on top
+            const reversedAlerts = [...alerts].reverse();
+            tableBody.innerHTML = reversedAlerts.map(alert => `
+                <tr>
+                    <td>${alert.queue}</td>
+                    <td class="priority-${alert.priority.toLowerCase()}">${alert.priority}</td>
+                    <td>${alert.status}</td>
+                    <td>
+                        <button class="action-btn edit-btn" onclick="editAlert('${alert.id}')">Edit</button>
+                        <button class="action-btn delete-btn" onclick="deleteAlert('${alert.id}')">Delete</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+    }
+</script>
+
+</body>
+</html>
